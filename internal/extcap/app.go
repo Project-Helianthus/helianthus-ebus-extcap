@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"io"
 	"strings"
+
+	"github.com/Project-Helianthus/helianthus-ebus-extcap/internal/capture"
 )
 
 const (
@@ -34,6 +36,7 @@ func (app *App) Run(args []string) error {
 		extcapVersion  string
 		captureMode    bool
 		iface          string
+		fifo           string
 		proxyEndpoint  string
 		transport      string
 		stream         string
@@ -50,6 +53,7 @@ func (app *App) Run(args []string) error {
 	fs.StringVar(&extcapVersion, "extcap-version", "", "")
 	fs.BoolVar(&captureMode, "capture", false, "")
 	fs.StringVar(&iface, "extcap-interface", interfaceName, "")
+	fs.StringVar(&fifo, "fifo", "", "")
 	fs.StringVar(&proxyEndpoint, "proxy-endpoint", "", "")
 	fs.StringVar(&transport, "transport", "ens", "")
 	fs.StringVar(&stream, "stream", "both", "")
@@ -73,6 +77,7 @@ func (app *App) Run(args []string) error {
 	case captureMode:
 		return app.capture(captureConfig{
 			iface:         iface,
+			fifo:          fifo,
 			proxyEndpoint: proxyEndpoint,
 			transport:     transport,
 			stream:        stream,
@@ -109,7 +114,7 @@ func (app *App) listDLTs(iface string) error {
 		return fmt.Errorf("unsupported extcap interface %q", iface)
 	}
 	_, err := fmt.Fprintln(app.stdout,
-		"dlt {number=252}{name=USER0}{display=Helianthus eBUS capture bootstrap}",
+		"dlt {number=147}{name=helianthus-ebus}{display=USER0}",
 	)
 	return err
 }
@@ -138,6 +143,7 @@ func (app *App) listConfig(iface string) error {
 
 type captureConfig struct {
 	iface         string
+	fifo          string
 	proxyEndpoint string
 	transport     string
 	stream        string
@@ -158,8 +164,13 @@ func (app *App) capture(cfg captureConfig) error {
 	if cfg.proxyEndpoint == "" {
 		return errors.New("missing required --proxy-endpoint")
 	}
-	return fmt.Errorf(
-		"capture bootstrap only: live ENS ingestion for %q is not implemented yet",
-		cfg.proxyEndpoint,
-	)
+	if cfg.fifo == "" {
+		return errors.New("missing required --fifo")
+	}
+	return capture.RunLiveCapture(capture.LiveCaptureConfig{
+		ProxyEndpoint: cfg.proxyEndpoint,
+		FIFOPath:      cfg.fifo,
+		Stream:        cfg.stream,
+		ExportPCAPNG:  cfg.exportPCAPNG,
+	})
 }

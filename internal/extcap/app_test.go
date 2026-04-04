@@ -45,7 +45,7 @@ func TestListConfig(t *testing.T) {
 	}
 }
 
-func TestCaptureBootstrapError(t *testing.T) {
+func TestCaptureRequiresFIFO(t *testing.T) {
 	var out bytes.Buffer
 	app := NewApp(&out)
 	err := app.Run([]string{
@@ -54,9 +54,9 @@ func TestCaptureBootstrapError(t *testing.T) {
 		"--proxy-endpoint", "127.0.0.1:19001",
 	})
 	if err == nil {
-		t.Fatal("Run(--capture) error = nil; want bootstrap error")
+		t.Fatal("Run(--capture) error = nil; want fifo error")
 	}
-	if !strings.Contains(err.Error(), "capture bootstrap only") {
+	if !strings.Contains(err.Error(), "missing required --fifo") {
 		t.Fatalf("capture error = %q", err)
 	}
 }
