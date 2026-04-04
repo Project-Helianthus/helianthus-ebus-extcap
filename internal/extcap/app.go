@@ -64,8 +64,6 @@ func (app *App) Run(args []string) error {
 	}
 
 	switch {
-	case extcapVersion != "":
-		return app.printVersion()
 	case listInterfaces:
 		return app.listInterfaces()
 	case listDLTs:
@@ -84,6 +82,8 @@ func (app *App) Run(args []string) error {
 			opcodeFilter:  opcodeFilter,
 			familyFilter:  familyFilter,
 		})
+	case extcapVersion != "":
+		return app.printVersion()
 	default:
 		return app.listInterfaces()
 	}
