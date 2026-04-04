@@ -31,6 +31,7 @@ func (app *App) Run(args []string) error {
 		listInterfaces bool
 		listDLTs       bool
 		listConfig     bool
+		extcapVersion  string
 		captureMode    bool
 		iface          string
 		proxyEndpoint  string
@@ -46,6 +47,7 @@ func (app *App) Run(args []string) error {
 	fs.BoolVar(&listInterfaces, "extcap-interfaces", false, "")
 	fs.BoolVar(&listDLTs, "extcap-dlts", false, "")
 	fs.BoolVar(&listConfig, "extcap-config", false, "")
+	fs.StringVar(&extcapVersion, "extcap-version", "", "")
 	fs.BoolVar(&captureMode, "capture", false, "")
 	fs.StringVar(&iface, "extcap-interface", interfaceName, "")
 	fs.StringVar(&proxyEndpoint, "proxy-endpoint", "", "")
@@ -62,6 +64,8 @@ func (app *App) Run(args []string) error {
 	}
 
 	switch {
+	case extcapVersion != "":
+		return app.printVersion()
 	case listInterfaces:
 		return app.listInterfaces()
 	case listDLTs:
@@ -83,6 +87,11 @@ func (app *App) Run(args []string) error {
 	default:
 		return app.listInterfaces()
 	}
+}
+
+func (app *App) printVersion() error {
+	_, err := fmt.Fprintf(app.stdout, "extcap {version=%s}{display=Helianthus eBUS passive capture}\n", version)
+	return err
 }
 
 func (app *App) listInterfaces() error {

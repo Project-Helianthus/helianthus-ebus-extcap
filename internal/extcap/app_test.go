@@ -18,6 +18,18 @@ func TestListInterfaces(t *testing.T) {
 	}
 }
 
+func TestVersion(t *testing.T) {
+	var out bytes.Buffer
+	app := NewApp(&out)
+	if err := app.Run([]string{"--extcap-version", "4.4"}); err != nil {
+		t.Fatalf("Run(--extcap-version) error = %v", err)
+	}
+	got := out.String()
+	if !strings.Contains(got, "extcap {version=0.1.0}") {
+		t.Fatalf("version output missing expected extcap version stanza:\n%s", got)
+	}
+}
+
 func TestListConfig(t *testing.T) {
 	var out bytes.Buffer
 	app := NewApp(&out)
