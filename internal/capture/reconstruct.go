@@ -91,7 +91,7 @@ func (r *Reconstructor) feedSymbol(symbol byte) (records [][]byte) {
 		return nil
 
 	case reconstructPhaseWaitResponse:
-		// ACK + immediate SYN is treated as an ack-only master-slave transaction.
+		// ACK + immediate SYN is treated as an ack-only initiator-responder transaction.
 		if len(r.responseSegment) == 0 && symbol == ebusSync {
 			record := BuildEbusFramePayload(0, false, false, append([]byte(nil), r.transactionRaw...))
 			r.reset()
