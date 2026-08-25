@@ -1,25 +1,44 @@
-# AGENTS
+# AGENTS.md
 
-This repository is part of the **Helianthus Multi-Protocol HVAC Gateway Platform**.
+## Purpose and boundaries
 
-## Dual-AI Operating Model
+`helianthus-ebus-extcap` is a passive eBUS capture client for Wireshark. It
+lists the extcap interface, connects to `helianthus-ebusd-proxy` through the
+ENS northbound surface, and shapes `ens-events` and `ebus-frames` for capture.
 
-All development follows the workspace-root
-[`AGENTS.md`](../AGENTS.md).
+Keep here the extcap CLI, passive ENS ingestion, read-only capture filtering,
+and capture-record/pcapng shaping. Do not add Wireshark dissector code, gateway
+runtime or semantic publishing surfaces, or direct adapter-class capture.
 
-- Role binding is portable between orchestrator and co-pilot.
-- Use the co-pilot for reasoning-heavy work only.
-- Keep one issue and one PR in flight for this repository.
-- Follow doc-gate for any externally visible contract change.
+## Workflow
 
-## Repo-Specific Rules
+1. Reconcile `origin/main`, local changes, related issues, branches, PRs,
+   reviews, and checks before work.
+2. Use one scoped issue, a branch named `issue/<number>-<slug>` from current
+   `main`, and one linked PR.
+3. Keep changes narrow; add focused tests when behavior changes. Protocol or
+   capture-format changes need RED-first evidence where practical.
+4. Run `./scripts/ci_local.sh` before pushing. State the exact command and
+   result in the PR, then obtain fresh review for the full PR head.
+5. Do not merge without green applicable checks, resolved blocking findings,
+   and any required public documentation. Stop at the requested boundary.
 
-1. This repository is **proxy-only** for passive capture in v1.
-2. Direct adapter-class ENS/ENH passive support must not be introduced without
-   paired docs and validation evidence.
-3. The capture record contract must stay aligned with
-   `helianthus-docs-ebus`.
-4. The opcode catalog must stay explicit and test-covered.
-5. Wireshark-facing behavior changes require a linked change in
-   `helianthus-ebus-wireshark` or an explicit compatibility note.
+`ORCHESTRATOR` and `CO_PILOT` are portable reasoning roles. Use a co-pilot for
+planning, bounded implementation, adversarial review, or a second opinion; do
+not spend that role on routine reads, searches, polling, or shell inspection.
+If it is unavailable, continue with an independent fresh review when the risk
+justifies it.
 
+## Safety, privacy, and documentation
+
+This client is capture-only: do not introduce bus writes, adapter control, or
+active probing. Live capture, credentials, installation changes, and any action
+that can affect a device require explicit operator confirmation at action time.
+Never commit credentials, personal identifiers, network coordinates, device
+fingerprints, or private/raw captures; use sanitized, minimal fixtures.
+
+Keep the opcode catalog explicit and test-covered. Unknown or unsupported data
+must remain raw rather than be speculatively decoded. Capture-format or
+Wireshark-facing behavior changes need a compatibility note and, when they
+change the public eBUS contract, documentation in
+[`helianthus-docs-ebus`](https://github.com/Project-Helianthus/helianthus-docs-ebus).
