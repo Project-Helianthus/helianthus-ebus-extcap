@@ -1,5 +1,11 @@
 # helianthus-ebus-extcap
 
+> **Retired.** The Board retired this tool on 2026-11-08. It receives no
+> further changes. For field debugging, capture through the MCP
+> bus-observability tools of
+> [`helianthus-ebusgateway`](https://github.com/Project-Helianthus/helianthus-ebusgateway)
+> instead.
+
 `helianthus-ebus-extcap` is the Helianthus Wireshark `extcap` client for
 passive ENS capture over `helianthus-ebusd-proxy`.
 
